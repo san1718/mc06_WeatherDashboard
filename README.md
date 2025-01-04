@@ -5,7 +5,8 @@ In this challenge, the use of server-side APIs will be used to get the weather o
 This will help the user get information and plan their trip accordingly.
 
 ## Features
-
+* Be able to search for a destination
+* Get the weather from the desired destination
 ## Technologies Used
 1. HTML
 2. CSS
