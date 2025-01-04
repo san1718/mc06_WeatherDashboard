@@ -7,6 +7,8 @@ This will help the user get information and plan their trip accordingly.
 ## Features
 * Be able to search for a destination
 * Get the weather from the desired destination
+* Search history for the previous cities
+
 ## Technologies Used
 1. HTML
 2. CSS
