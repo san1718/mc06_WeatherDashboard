@@ -10,6 +10,7 @@
 // WHEN I click on a city in the search history
 // THEN I am again presented with current and future conditions for that city
 
+const apiKey = '6bdabfafea6c9fb1c11b7b85ca98c4ca';
 const weatherFormEl = document.getElementById("weatherForm");
 const weatherResultEl = document.getElementById("weatherdataicon");
 const weatherCityEl = document.getElementById("weatherdataicon");
@@ -29,7 +30,7 @@ function travelDes() {
 
 function getWeather() {
     // Placing geocode api to get a location for the targeted destinations
-    const requestUrlGeocode = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=1&appid=6bdabfafea6c9fb1c11b7b85ca98c4ca`;
+    const requestUrlGeocode = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=1&appid=${apiKey}`;
 
     // Fetching for a response
     fetch(requestUrlGeocode)
