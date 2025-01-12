@@ -15,4 +15,8 @@ This will help the user get information and plan their trip accordingly.
 3. JS
 4. APIs
 
+## Links
+[Home](https://github.com/san1718/mc06_WeatherDashboard)
+[Deployed](https://san1718.github.io/mc06_WeatherDashboard/)
+
 ## Screenshots
