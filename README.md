@@ -17,6 +17,7 @@ This will help the user get information and plan their trip accordingly.
 
 ## Links
 [Home](https://github.com/san1718/mc06_WeatherDashboard)
+<br />
 [Deployed](https://san1718.github.io/mc06_WeatherDashboard/)
 
 ## Screenshots
