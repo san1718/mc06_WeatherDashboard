@@ -21,3 +21,6 @@ This will help the user get information and plan their trip accordingly.
 [Deployed](https://san1718.github.io/mc06_WeatherDashboard/)
 
 ## Screenshots
+<img width="1000" alt="Homepage" src="">
+<img width="1000" alt="Search" src="">
+<img width="1000" alt="Homepage" src="">

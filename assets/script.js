@@ -16,7 +16,8 @@ search.addEventListener("click", function () {
     .then((data) => {
       const { name, lat, lon } = data[0];
       console.log(lat, lon);
-      getWeather(name, lat, lon); //passing down to the function
+      // Passing down to the function
+      getWeather(name, lat, lon); 
     })
     .catch((error) => {
       weather.innerHTML = `<p>Error: ${error}</p>`;
@@ -52,9 +53,11 @@ const renderSearchHistory = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        const { name, lat, lon } = data[0]; //defind them and passing them down
+        // Defining and passing down
+        const { name, lat, lon } = data[0];
         console.log(lat, lon);
-        getWeather(name, lat, lon); //passing down to the function
+        // Passing down to function
+        getWeather(name, lat, lon);
       })
       .catch((error) => {
         weather.innerHTML = `<p>Error: ${error}</p>`;
@@ -157,17 +160,23 @@ function displayWeather(weatherData, cityName) {
       wind.textContent = `Wind: ${windSpeed} M/S`;
       humidity.textContent = `Humidity: ${humidity}%`;
 
+      // Card stuff
       cardBody.appendChild(cardTitle);
-      cardBody.appendChild(iconElement); // Add icon to the card
-      cardBody.appendChild(descriptionElement); // Add description to the card
+      // Adding icon
+      cardBody.appendChild(iconElement);
+      // Adding description
+      cardBody.appendChild(descriptionElement);
+      // Adding temp
       cardBody.appendChild(temp);
+      // Adding wind
       cardBody.appendChild(wind);
+      // Adding humidity
       cardBody.appendChild(humidity);
 
       card.appendChild(cardBody);
       forecastCard.appendChild(card);
 
-      // 6. Append to Container
+      // Appending to Container
       forecastContainer.appendChild(forecastCard);
     }
   });
