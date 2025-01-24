@@ -1,94 +1,176 @@
-// GIVEN a weather dashboard with form inputs
-// WHEN I search for a city
-// THEN I am presented with current and future conditions for that city and that city is added to the search history
-// WHEN I view current weather conditions for that city
-// THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, and the wind speed
-// WHEN I view future weather conditions for that city
-// THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity
-// WHEN I click on a city in the search history
-// THEN I am again presented with current and future conditions for that city
+// Variables
+const API_key = "6bdabfafea6c9fb1c11b7b85ca98c4ca";
+const locationInput = document.getElementById("city-input");
+const search = document.getElementById("search-btn");
+const weather = document.getElementById("weather");
+const current = document.getElementById("current");
+const search_element = document.getElementById("search-history");
 
-const apiKey = '6bdabfafea6c9fb1c11b7b85ca98c4ca';
-const weatherFormEl = document.getElementById("weatherForm");
-const weatherResultEl = document.getElementById("weatherdataicon");
-const weatherCityEl = document.getElementById("weatherdataicon");
-const weatherReportEl = document.getElementById("weatherReport");
-
-function travelDes() {
-    // 
-    const inputCityEl = document.getElementById("cityInput");
-    const inputCountryEl = document.getElementById("countryInput");
-    const city = inputCityEl.value;
-    const country = inputCountryEl.value;
-
-    console.log(city);
-    console.log(country);
-    getWeather(city, country);
-}
-
-function getWeather() {
-    // Placing geocode api to get a location for the targeted destinations
-    const requestUrlGeocode = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=1&appid=${apiKey}`;
-
-    // Fetching for a response
-    fetch(requestUrlGeocode)
-    .then(function(response) {
-        return response.json();
+search.addEventListener("click", function () {
+  console.log(API_key);
+  saveSearchHistory(locationInput.value);
+  fetch(
+    `https://api.openweathermap.org/geo/1.0/direct?q=${locationInput.value}&appid=${API_key}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      const { name, lat, lon } = data[0];
+      console.log(lat, lon);
+      getWeather(name, lat, lon); //passing down to the function
     })
-    // Response gotten
-    .then(function(data) {
-        console.log(data[0]);
-        // if statement to see if we get something useful back
-        if (data[0]) {
-            const resultObj = data[0];
-            let lat = resultObj.lat;
-            let lon = resultObj.lon;
-            // Weather API
-            const requestUrlWeather = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=6bdabfafea6c9fb1c11b7b85ca98c4ca`;
-            // Fetch response for the weather location
-            fetch(requestUrlWeather)
-            .then(function(response) {
-                return response.json();
-            })
-            // Getting response for weather
-            .then(function(weatherdata) {
-                console.log(weatherdata.weather[0]);
-                // Decorations / Icons and stuff
-                const weatherObj = weatherdata.weather[0];
-                const iconWeather = document.createElement("img");
-                iconWeather.setAttribute("src", `https://openweathermap.org/img/wn/${weatherObj.icon}@2x.png`);
-                weatherResultEl.appendChild(iconWeather);
-            });
-        } else {
-            showError("Location not found, please try again.");
-        }
-    })
-
-}
-
-weatherFormEl.addEventListener("submit", function (event) {
-    event.preventDefault();
-    document.getElementById("weatherdataicon").innerHTML = "";
-    removeError();
-    travelDes();
+    .catch((error) => {
+      weather.innerHTML = `<p>Error: ${error}</p>`;
+    });
 });
+const saveSearchHistory = (city) => {
+  let cityHistory = JSON.parse(localStorage.getItem("cities"));
+  if (!cityHistory) {
+    cityHistory = [];
+  }
+  cityHistory.push(city);
+  localStorage.setItem("cities", JSON.stringify(cityHistory));
+};
+const renderSearchHistory = () => {
+  let cityHistory = JSON.parse(localStorage.getItem("cities"));
+  if (!cityHistory) {
+    return;
+  }
+  console.log(cityHistory);
+  for (city of cityHistory) {
+    const button = document.createElement("button");
+    button.textContent = city;
+    button.value = city;
+    button.classList.add("search-history");
+    console.log(city);
+    search_element.appendChild(button);
+  }
+  search_element.addEventListener("click", function (e) {
+    console.log(e.target.value);
+    const city = e.target.value;
+    fetch(
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${API_key}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const { name, lat, lon } = data[0]; //defind them and passing them down
+        console.log(lat, lon);
+        getWeather(name, lat, lon); //passing down to the function
+      })
+      .catch((error) => {
+        weather.innerHTML = `<p>Error: ${error}</p>`;
+      });
+  });
+};
+const getWeather = (name, lat, lon) => {
+  fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_key}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      const { list } = data;
+      const todaysWeather = list[0];
 
-function showError(errorMsg) {
-    const messageEl = document.createElement("div");
-    messageEl.setAttribute("id", "weatherError");
-    messageEl.classList.add("notification", "is-link");
-    const buttonEl = document.createElement("button");
-    buttonEl.classList.add("delete");
+      displayCurrentWeather(todaysWeather, name);
 
-    messageEl.textContent = errorMsg;
-    messageEl.prepend(buttonEl);
+      displayWeather(list, name);
+    });
+};
+function displayCurrentWeather(weatherData, cityName) {
+  const date = new Date(weatherData.dt * 1000);
+  const tempKelvin = weatherData.main.temp;
+  const tempCelsius = tempKelvin - 273.15;
+  const windSpeed = weatherData.wind.speed;
+  const humidity = weatherData.main.humidity;
+  const iconCode = weatherData.weather[0].icon;
+  const description = weatherData.weather[0].description;
 
-    weatherReportEl.prepend(messageEl);
+  const options = {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  };
+  const formattedDate = date.toLocaleDateString("en-US", options);
+
+  document.getElementById(
+    "city-name"
+  ).textContent = `${cityName} (${formattedDate})`;
+  document.getElementById(
+    "temperature"
+  ).textContent = `Temperature: ${tempCelsius.toFixed(2)}°C`;
+  document.getElementById("wind").textContent = `Wind: ${windSpeed} M/S`;
+  document.getElementById("humidity").textContent = `Humidity: ${humidity}%`;
+  document.getElementById(
+    "weather-icon"
+  ).innerHTML = `<img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="${description}">`;
 }
+function displayWeather(weatherData, cityName) {
+  const forecastContainer = document.getElementById("forecast-container");
+  forecastContainer.innerHTML = "";
 
-function removeError() {
-    const msgEl = document.getElementById("weatherError");
-    if (msgEl) {
-        msgEl.remove();
+  weatherData.forEach((element, index) => {
+    if (index % 8 === 0) {
+      const date = new Date(element.dt * 1000);
+      const tempKelvin = element.main.temp;
+      const tempFahrenheit = ((tempKelvin - 273.15) * 9) / 5 + 32;
+      const windSpeed = element.wind.speed;
+      const iconCode = element.weather[0].icon;
+      const description = element.weather[0].description;
+      const options = {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      };
+      const formattedDate = date.toLocaleDateString("en-US", options);
+
+      const forecastCard = document.createElement("div");
+      forecastCard.classList.add("col", "mb-3");
+
+      const card = document.createElement("div");
+      card.classList.add("card", "border-0", "bg-secondary", "text-white");
+
+      const cardBody = document.createElement("div");
+      cardBody.classList.add("card-body", "p-3", "text-white");
+
+      const cardTitle = document.createElement("h5");
+      cardTitle.classList.add("card-title", "fw-semibold");
+      cardTitle.textContent = `(${formattedDate})`;
+
+      const temp = document.createElement("h6");
+      temp.classList.add("card-text", "my-3", "mt-3");
+
+      const wind = document.createElement("h6");
+      wind.classList.add("card-text", "my-3");
+
+      const humidity = document.createElement("h6");
+      humidity.classList.add("card-text", "my-3");
+
+      const iconElement = document.createElement("img");
+      iconElement.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+      iconElement.alt = description;
+
+      const descriptionElement = document.createElement("p");
+      descriptionElement.textContent = description;
+
+      temp.textContent = `Temp: ${tempFahrenheit.toFixed(2)}°F`;
+      wind.textContent = `Wind: ${windSpeed} M/S`;
+      humidity.textContent = `Humidity: ${humidity}%`;
+
+      cardBody.appendChild(cardTitle);
+      cardBody.appendChild(iconElement); // Add icon to the card
+      cardBody.appendChild(descriptionElement); // Add description to the card
+      cardBody.appendChild(temp);
+      cardBody.appendChild(wind);
+      cardBody.appendChild(humidity);
+
+      card.appendChild(cardBody);
+      forecastCard.appendChild(card);
+
+      // 6. Append to Container
+      forecastContainer.appendChild(forecastCard);
     }
+  });
 }
+
+renderSearchHistory();
