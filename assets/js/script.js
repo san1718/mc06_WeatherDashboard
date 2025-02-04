@@ -1,5 +1,5 @@
 // Variables
-const API_key = "6bdabfafea6c9fb1c11b7b85ca98c4ca";
+const API_key =  "6bdabfafea6c9fb1c11b7b85ca98c4ca";
 const locationInput = document.getElementById("city-input");
 const search = document.getElementById("search-btn");
 const weather = document.getElementById("weather");
