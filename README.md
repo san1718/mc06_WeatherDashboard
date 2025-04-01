@@ -24,6 +24,7 @@ Planning a trip or daily activities becomes easier with real-time weather update
 - **APIs:** OpenWeather API for real-time weather data  
 
 ## Installation & Usage  
+For local:
 ### 1️⃣ Clone the Repository  
 ```sh
 git clone git@github.com:san1718/mc06_WeatherDashboard.git
